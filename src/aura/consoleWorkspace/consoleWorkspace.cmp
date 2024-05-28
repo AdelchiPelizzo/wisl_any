@@ -1,0 +1,149 @@
+<!--
+ - Created by Adelchi on 02/06/2022.
+ -->
+
+<aura:component description="consoleWorkspace" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" controller="ViewersCtrl" access="global" >
+
+    <aura:attribute name="currentUser" type="User"/>
+    <force:recordData aura:id="recordLoader" recordId="{!$SObjectType.CurrentUser.Id}"
+                      fields="FirstName, LastName"
+                      targetFields="{!v.currentUser}"/>
+
+
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="allTabInfo" type="Object[]" access="global" />
+    <aura:handler event="lightning:tabClosed" action="{! c.onTabClose }"/>
+    <aura:handler event="lightning:tabCreated" action="{! c.onTabCreate }"/>
+    <lightning:empApi aura:id="empApi"/>
+    <lightning:input aura:id="startView" label="endView" name="start" type="text" value="/event/StartCaseViewing__e" class="slds-hide"/>
+    <lightning:input aura:id="endView" label="startView" name="end" type="text" value="/event/EndCaseViewing__e" class="slds-hide"/>
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="subscriptionU" type="Map" />
+    <aura:attribute name="caseNumber" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="userName" type="String" />
+    <aura:attribute name="evtInfo"  type="Object[]" access="global"  />
+    <aura:attribute name="tabFocus" type="object" access="global" />
+    <aura:attribute name="switch" type="string" access="global" default="off" />
+    <aura:attribute name="switchSound" type="string" access="global" default="off" />
+    <aura:attribute name="showDraftConfirm" type="Boolean" default="true" />
+    <aura:attribute name="isTabCloseable" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <aura:attribute name="showConfirmDialog" type="boolean" default="false"/>
+    <aura:attribute name="showSet" type="boolean" default="false"/>
+    <aura:attribute name="iconName" type="string" default="utility:expand_alt"/>
+    <aura:attribute name="header1" type="String[]" default=""/>
+    <aura:attribute name="header2" type="String[]" default="['Viewer name','Case Number','Start']"/>
+    <aura:attribute name="viewerInOut" type="String[]" default="['Viewer In','Viewer Out']"/>
+    <aura:attribute name="notifications" type="String" default="Notifications"/>
+    <aura:attribute name="volume" type="Integer"  />
+    <aura:attribute name="volumeHeader" type="String" default="Sound Volume"  />
+
+    <aura:attribute name="optionsActive" type="List" default="[
+            {'label': 'Sound', 'value': 'ActiveSoundOn'},
+            {'label': 'Visual', 'value': 'ActivePopUpOn'}
+            ]"/>
+    <aura:attribute name="valueActive" type="String" default=""/>
+
+    <aura:attribute name="optionsInactive" type="List" default="[
+            {'label': 'Sound', 'value': 'InactiveSoundOn'},
+            {'label': 'Visual', 'value': 'InactivePopUpOn'}
+            ]"/>
+    <aura:attribute name="valueInactive" type="String" default=""/>
+
+    <aura:if isTrue="{!v.showConfirmDialog}">
+        <div class = "center">
+            <div role="dialog" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container">
+                    <div class="slds-align-middle slds-text-color_destructive slds-m-bottom_x-small slds-m-top_large slds-color__background_gray-1 opacity">Are you sure you want to Reset Viewers' List ?</div>
+                    <footer class="transparent slds-align_absolute-center">
+                        <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                    </footer>
+                </div>
+            </div>
+            <div class="slds-backdrop"></div>
+        </div>
+    </aura:if>
+    <div class="slds-scrollable">
+<!--        <div class="slds-box slds-box slds-theme_info sticky">-->
+<!--            <div class="slds-text-body_regular slds-text-align_center">-->
+<!--                <div class="slds-text-color_inverse slds-text-align_center" >-->
+<!--                    {!v.header1[0]} <em><a href="https://www.adelforce.com/contact" target="_blank" ><span style="color:aquamarine">adelForce.com</span></a></em>™ {!v.header1[1]} <em><a href="mailto:adelchi@adelchiltd.com"><span style="color:aquamarine">email</span></a></em> {!v.header1[2]}-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Viewers currently active">
+            <thead>
+            <tr class="slds-text-body_small">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="nr">#</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Viewer Name">{!v.header2[0]}</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Case Number">{!v.header2[1]}</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Event created time">{!v.header2[2]}</div>
+                </th>
+            </tr>
+            </thead>
+            <tbody >
+            <aura:iteration items="{!v.evtInfo}" var="item" indexVar="i" >
+<!--                <aura:if isTrue="{!v.userName != item.data.payload.adelwhois__viewerName__c}" >-->
+                    <tr class="slds-hint-parent slds-text-body_regular">
+                        <td>{!i+1}</td>
+                        <td >
+                            <div class="slds-truncate" >
+                                <p>{!item.data.payload.userName__c}</p>
+                            </div>
+                        </td>
+                        <td >
+                            <div class="slds-truncate" >
+                                <p>{!item.data.payload.caseNumber__c}</p>
+                            </div>
+                        </td>
+                        <td >
+                            <div class="slds-truncate" >
+                                <p><lightning:formattedDateTime  hour="2-digit" minute="2-digit"  value="{!item.data.payload.CreatedDate}" /></p>
+                            </div>
+                        </td>
+                    </tr>
+<!--                </aura:if>-->
+            </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    <div class="slds-docked_container transparent slds-m-bottom_medium">
+        <div class="slds-m-right_large">
+            <lightning:buttonIcon iconName="utility:delete"  alternativeText="Delete" variant="brand" tooltip="Remove Viewers From List" onclick="{!c.cleanUp}"/>
+        </div>
+        <aura:if isTrue="{!v.showSet}">
+            <div class="notificationBox">
+                <div style="padding:0.2rem; background: rgb(1, 118, 211)">
+                    <div class="slds-text-color_inverse ">
+                        {!v.notifications}
+                    </div>
+                </div>
+                <lightning:slider label="{!v.volumeHeader}" value="{!v.volume}" onchange="{!c.handleVolume}" step="1"/>
+                <lightning:checkboxGroup
+                        name="Viewer In"
+                        label="{!v.viewerInOut[0]}"
+                        options="{! v.optionsActive }"
+                        value="{! v.valueActive }"
+                        onchange="{! c.handleChange }"/>
+
+                <lightning:checkboxGroup
+                        name="Viewer Out"
+                        label="{!v.viewerInOut[1]}"
+                        options="{! v.optionsInactive }"
+                        value="{! v.valueInactive }"
+                        onchange="{! c.handleChange }"/>
+            </div>
+        </aura:if>
+        <lightning:buttonIcon aura:id="buttonIconExpand" iconName="{!v.iconName}" variant="brand" onclick="{! c.showSettings}" alternativeText="Expand Settings"/>
+    </div>
+</aura:component>

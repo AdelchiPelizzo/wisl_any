@@ -1,0 +1,62 @@
+<aura:component description="record_viewers" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+                controller="ViewersCtrl_Generic">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="evtInfo"  type="Object[]" access="global"  />
+    <aura:attribute name="currentUser" type="User"/>
+    <aura:attribute name="rId" type="String" default="{!v.recordId}"/>
+    <aura:attribute name="sObject" type="String" default="" />
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:attribute name="allTabInfo" type="Object[]" access="global" />
+    <aura:handler event="lightning:tabClosed" action="{! c.onTabClose }"/>
+    <aura:handler event="lightning:tabCreated" action="{! c.onTabCreate }"/>
+    <lightning:empApi aura:id="empApi"/>
+    <lightning:input aura:id="startView" label="endView" name="start" type="text" value="/event/StartViewing__e" class="slds-hide"/>
+    <lightning:input aura:id="endView" label="startView" name="end" type="text" value="/event/EndViewing__e" class="slds-hide"/>
+
+    <force:recordData aura:id="recordLoader" recordId="{!$SObjectType.CurrentUser.Id}"
+                      fields="FirstName, LastName"
+                      targetFields="{!v.currentUser}"/>
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Viewers currently active">
+        <thead>
+        <tr class="slds-text-body_small">
+            <th class="" scope="col">
+                <div class="slds-truncate" title="nr">#</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Viewer Name">Name</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Case Number">Id</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Event created time">Time</div>
+            </th>
+        </tr>
+        </thead>
+        <tbody >
+            <aura:iteration items="{!v.evtInfo}" var="item" indexVar="i" >
+                <!--                <aura:if isTrue="{!v.userName != item.data.payload.adelwhois__viewerName__c}" >-->
+                <tr class="slds-hint-parent slds-text-body_regular">
+                    <td>{!i+1}</td>
+                    <td >
+                        <div class="slds-truncate" >
+                            <p>{!item.Name}</p>
+                        </div>
+                    </td>
+                    <td >
+                        <div class="slds-truncate" >
+                            <p>{!item.User__c}</p>
+                        </div>
+                    </td>
+                    <td >
+                        <div class="slds-truncate" >
+                            <p><lightning:formattedDateTime  hour="2-digit" minute="2-digit"  value="{!item.CreatedDate}" /></p>
+                        </div>
+                    </td>
+                </tr>
+                <!--                </aura:if>-->
+            </aura:iteration>
+        </tbody>
+    </table>
+</aura:component>

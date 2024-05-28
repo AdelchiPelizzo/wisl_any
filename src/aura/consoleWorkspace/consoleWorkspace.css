@@ -1,0 +1,136 @@
+/**
+ * Created by Adelchi on 02/06/2022.
+ */
+
+.THIS .on {
+    color: limegreen;
+}
+
+.THIS .off {
+    color: gray;
+}
+
+.THIS .space {
+    width: 20%;
+}
+
+.THIS .tooltip:hover .tooltipText {
+    visibility: visible;
+}
+
+.THIS .tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.THIS .tooltip .tooltipText {
+    visibility: hidden;
+    width: 120px;
+    background-color: #032d60;
+    /*background-color: transparent;*/
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 100%;
+    margin-left: -6px;
+}
+
+.THIS .slds-scrollable {
+    overflow: auto !important;
+    height: 5rem;
+}
+
+.THIS ::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* Track */
+.THIS ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+.THIS ::-webkit-scrollbar-thumb {
+    background: red;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+.THIS ::-webkit-scrollbar-thumb:hover {
+    background: #b30000;
+}
+
+.THIS .transparent{
+    background: rgba(176, 196, 223, 0);
+}
+
+.THIS .bottom{
+    position:relative;
+    bottom:0;
+}
+
+.THIS .opacity{
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+.THIS .center{
+    position: absolute;
+}
+
+.THIS .btnGroup{
+      display: inline-block;
+      font-size: 0;
+      border: 1px solid gray;
+/*          box-shadow: 5px 10px 18px rgb(55, 173, 39);*/
+}
+
+.THIS .hide{
+    visibility: hidden;
+}
+
+.THIS .bannerBox{
+      width: 30px;
+      height: 10px;
+      padding: 50px;
+      border: 1px solid red;
+}
+
+.THIS .a {
+       color: red;
+}
+
+.THIS .head{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 99;
+}
+
+.THIS .a:link {
+     color: green;
+     background-color: transparent;
+     text-decoration: none;
+}
+
+.THIS .sticky {
+     position: fixed;
+     top: 0;
+     width: 100%
+}
+
+.THIS .notificationBox {
+    background-color: rgb(201, 201, 201);
+    padding:0.5rem;
+    margin-right: 18px;
+    border-radius: 5px;
+
+}

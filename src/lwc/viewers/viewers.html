@@ -1,0 +1,88 @@
+<!--
+ - Created by adpel on 06/04/2024.
+ -->
+
+<!-- Viewers -->
+<template>
+    <lightning-card title="Viewers" icon-name="custom:custom15" >
+        <div slot="actions">
+            <template lwc:if={isVisible} >
+                <lightning-button variant="base" label={filterLabel} title={filterLabel} onclick={filterRows} class="slds-m-left_x-small filter" ></lightning-button>
+            </template>
+            <button class="slds-button slds-button--icon slds-m-left_large" title="Show All Viewers" onclick={showCard}>
+                <lightning-icon icon-name={iconNameOpen} size="small" onclick={showEvent} ></lightning-icon>
+                <span class="slds-assistive-text">Show All Viewers</span>
+            </button>
+        </div>
+        <template lwc:if={isVisible} >
+            <template lwc:if={isModalVisible} >
+                <section  aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-is-absolute">
+                    <div class="slds-modal__container" >
+                        <lightning-modal-body onclick={handleClose} >
+                            <lightning-record-view-form record-id={recordIdFromEvent} object-api-name={objTypeDetails}>
+                                <div class="slds-grid slds-wrap">
+                                    <template for:each={detailsFields} for:item="field">
+                                        <ul key={field} class="slds-list_horizontal slds-box">
+                                            <li class="slds-item">
+                                                <div  class="slds-col slds-size_1-of-1">
+                                                    <lightning-output-field field-name={field} ></lightning-output-field>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </template>
+                                </div>
+                            </lightning-record-view-form>
+                        </lightning-modal-body>
+                    </div>
+                </section>
+            </template>
+            {error}
+            <div style="overflow-y: auto; max-height: 200px">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered " aria-labelledby="element-with-table-label other-element-with-table-label" >
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate slds-text-heading_label" title="Type"  >Info</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate slds-text-heading_label" title="Type"  >Type</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Record Id</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Name</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Start Viewing</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={viewersList} for:item="viewer" for:index="i" >
+                        <tr key={viewer.Id} data-name={viewer.objectType__c} class="tr"  >
+                            <td>
+                                <div data-object={viewer.objectType__c} data-value={viewer.record_id__c} onclick={details}  class="link">
+                                    <lightning-icon icon-name="action:info" size="xx-small" ></lightning-icon>
+                                    <!--                                <lightning-icon icon-name="action:description" size="x-small" data-object={viewer.objectType__c} data-value={viewer.record_id__c} onmouseover={details} onmouseleave= {handleHideModal}></lightning-icon>                                -->
+                                </div>
+                            </td>
+                            <td>
+                                {viewer.objectType__c}
+                            </td>
+                            <td >
+                                <a href={recordPageUrl} target=_blank><div onclick={navigate} data-value={viewer.record_id__c} data-object={viewer.objectType__c}  >{viewer.record_id__c}</div></a>
+                            </td>
+                            <td>
+                                {viewer.fullName__c}
+                            </td>
+                            <td>
+                                <lightning-formatted-date-time value={viewer.CreatedDate} hour="2-digit" minute="2-digit" second="2-digit" ></lightning-formatted-date-time>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table></div>
+        </template>
+    </lightning-card>
+</template>
