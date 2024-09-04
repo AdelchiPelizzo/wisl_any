@@ -10,8 +10,8 @@
     <aura:handler event="lightning:tabClosed" action="{! c.onTabClose }"/>
     <aura:handler event="lightning:tabCreated" action="{! c.onTabCreate }"/>
     <lightning:empApi aura:id="empApi"/>
-    <lightning:input aura:id="startView" label="endView" name="start" type="text" value="/event/StartViewing__e" class="slds-hide"/>
-    <lightning:input aura:id="endView" label="startView" name="end" type="text" value="/event/EndViewing__e" class="slds-hide"/>
+    <lightning:input aura:id="startView" label="endView" name="start" type="text" value="/event/adelanywisl__StartViewing__e" class="slds-hide"/>
+    <lightning:input aura:id="endView" label="startView" name="end" type="text" value="/event/adelanywisl__EndViewing__e" class="slds-hide"/>
 
     <force:recordData aura:id="recordLoader" recordId="{!$SObjectType.CurrentUser.Id}"
                       fields="FirstName, LastName"
@@ -46,7 +46,7 @@
                     </td>
                     <td >
                         <div class="slds-truncate" >
-                            <p>{!item.User__c}</p>
+                            <p>{!item.adelanywisl__User__c}</p>
                         </div>
                     </td>
                     <td >

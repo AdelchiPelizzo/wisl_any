@@ -11,27 +11,27 @@ global with sharing class ViewersCtrl {
     }
 
     @AuraEnabled
-    public static List<Viewer__c> getList(){
-        return (List<Viewer__c>) [SELECT Id, User__c, Case__c, Name, CreatedDate FROM Viewer__c];
+    public static List<adelanywisl__Viewer__c> getList(){
+        return (List<adelanywisl__Viewer__c>) [SELECT Id, adelanywisl__User__c, adelanywisl__Case__c, Name, CreatedDate FROM adelanywisl__Viewer__c];
     }
     @AuraEnabled
     public static void deleteViewer(String cId){
         String userId = UserInfo.getUserId();
         System.debug(cId +' '+userId);
         try {
-            System.debug('deleting ... '+[SELECT Id FROM Viewer__c WHERE User__c =: userId AND Case__c =: cId LIMIT 1]);
-            Viewer__c v = [SELECT Id FROM Viewer__c WHERE User__c =: userId AND Case__c =: cId LIMIT 1];
+            System.debug('deleting ... '+[SELECT Id FROM adelanywisl__Viewer__c WHERE adelanywisl__User__c =: userId AND adelanywisl__Case__c =: cId LIMIT 1]);
+            adelanywisl__Viewer__c v = [SELECT Id FROM adelanywisl__Viewer__c WHERE adelanywisl__User__c =: userId AND adelanywisl__Case__c =: cId LIMIT 1];
             delete v;
         }catch(Exception e){
             System.debug('Error--'+e.getMessage());
         }
     }
     @AuraEnabled
-    public static Viewer__c createViewer(String cId){
+    public static adelanywisl__Viewer__c createViewer(String cId){
         System.debug(cId);
-        Viewer__c v = new Viewer__c();
-        v.Case__c = cId;
-        v.User__c = v.Name = UserInfo.getUserId();
+        adelanywisl__Viewer__c v = new adelanywisl__Viewer__c();
+        v.adelanywisl__Case__c = cId;
+        v.adelanywisl__User__c = v.Name = UserInfo.getUserId();
         insert v;
         return v;
     }

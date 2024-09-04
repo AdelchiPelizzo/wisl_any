@@ -10,15 +10,15 @@
         <target>lightning__HomePage</target>
         <target>lightning__UtilityBar</target>
     </targets>
-    <targetConfigs>
-        <targetConfig targets="lightning__RecordPage">
-            <property
-                    name="objectApiName"
-                    type="String"
-                    label="Object Name"
-                    description="Automatically bind the page's object name to the component variable"
-                    default="{objectApiName}"
-            />
-        </targetConfig>
-    </targetConfigs>
+<!--    <targetConfigs>-->
+<!--        <targetConfig targets="lightning__RecordPage">-->
+<!--            <property-->
+<!--                    name="objectApiName"-->
+<!--                    type="String"-->
+<!--                    label="Object Name"-->
+<!--                    description="Automatically bind the page's object name to the component variable"-->
+<!--                    default="{objectApiName}"-->
+<!--            />-->
+<!--        </targetConfig>-->
+<!--    </targetConfigs>-->
 </LightningComponentBundle>

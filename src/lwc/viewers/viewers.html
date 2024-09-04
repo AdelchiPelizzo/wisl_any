@@ -16,22 +16,21 @@
         </div>
         <template lwc:if={isVisible} >
             <template lwc:if={isModalVisible} >
-                <section  aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-is-absolute">
-                    <div class="slds-modal__container" >
-                        <lightning-modal-body onclick={handleClose} >
-                            <lightning-record-view-form record-id={recordIdFromEvent} object-api-name={objTypeDetails}>
-                                <div class="slds-grid slds-wrap">
-                                    <template for:each={detailsFields} for:item="field">
-                                        <ul key={field} class="slds-list_horizontal slds-box">
-                                            <li class="slds-item">
-                                                <div  class="slds-col slds-size_1-of-1">
-                                                    <lightning-output-field field-name={field} ></lightning-output-field>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </div>
-                            </lightning-record-view-form>
+                <section  aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-is-absolute " style="max-width: 40% !important;">
+                    <div class="slds-modal__container " >
+                        <lightning-modal-body onclick={handleClose}  >
+                                <lightning-record-view-form
+                                        record-id={recordIdFromEvent}
+                                        object-api-name={objTypeDetails}>
+                                        <template for:each={detailsFields} for:item="field">
+                                            <tr key={field} class="slds-grid_align-end " >
+                                                <td >
+                                                    <label for="field" class="slds-text-body_small label" >{field}</label>
+                                                    <lightning-output-field field-name={field} variant="label-hidden" id="field" ></lightning-output-field><br>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                </lightning-record-view-form>
                         </lightning-modal-body>
                     </div>
                 </section>
@@ -42,45 +41,100 @@
                 <thead>
                     <tr class="slds-line-height_reset">
                         <th class="" scope="col">
-                            <div class="slds-truncate slds-text-heading_label" title="Type"  >Info</div>
+                            <div class="slds-truncate slds-th__action" title="Type"  >Info</div>
                         </th>
                         <th class="" scope="col">
-                            <div class="slds-truncate slds-text-heading_label" title="Type"  >Type</div>
+                            <div class="slds-truncate slds-th__action" title="Type"  >Type</div>
                         </th>
                         <th class="" scope="col">
-                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Record Id</div>
+                            <div class="slds-truncate  slds-th__action" title="Viewer Id">Record Id</div>
                         </th>
                         <th class="" scope="col">
-                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Name</div>
+                            <div class="slds-truncate  slds-th__action" title="Viewer Id">Name</div>
                         </th>
                         <th class="" scope="col">
-                            <div class="slds-truncate  slds-text-heading_label" title="Viewer Id">Start Viewing</div>
+                            <div class="slds-truncate  slds-th__action" title="Profile">Profile</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate  slds-th__action" title="Viewer Id">Start Viewing</div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <template for:each={viewersList} for:item="viewer" for:index="i" >
-                        <tr key={viewer.Id} data-name={viewer.objectType__c} class="tr"  >
+                    <template for:each={sameList} for:item="viewerSL" for:index="i" >
+                        <tr key={viewerSL.Id} data-name={viewerSL.adelanywisl__objectType__c} class="tr sameRecord"  >
                             <td>
-                                <div data-object={viewer.objectType__c} data-value={viewer.record_id__c} onclick={details}  class="link">
+                                <div data-object={viewerSL.adelanywisl__objectType__c} data-value={viewerSL.adelanywisl__record_id__c} onclick={details}  class="link" style="background-color: {viewer.adelanywisl__record_id__c }">
                                     <lightning-icon icon-name="action:info" size="xx-small" ></lightning-icon>
-                                    <!--                                <lightning-icon icon-name="action:description" size="x-small" data-object={viewer.objectType__c} data-value={viewer.record_id__c} onmouseover={details} onmouseleave= {handleHideModal}></lightning-icon>                                -->
                                 </div>
                             </td>
                             <td>
-                                {viewer.objectType__c}
+                                {viewerSL.adelanywisl__objectType__c}
                             </td>
                             <td >
-                                <a href={recordPageUrl} target=_blank><div onclick={navigate} data-value={viewer.record_id__c} data-object={viewer.objectType__c}  >{viewer.record_id__c}</div></a>
+                                <a href={recordPageUrl} target=_blank><div onclick={navigate} data-value={viewerSL.adelanywisl__record_id__c} data-object={viewerSL.adelanywisl__objectType__c}  >{viewerSL.adelanywisl__record_id__c}</div></a>
                             </td>
                             <td>
-                                {viewer.fullName__c}
+                                {viewerSL.adelanywisl__fullName__c}
                             </td>
                             <td>
-                                <lightning-formatted-date-time value={viewer.CreatedDate} hour="2-digit" minute="2-digit" second="2-digit" ></lightning-formatted-date-time>
+                                {viewerSL.adelanywisl__Profile__c}
+                            </td>
+                            <td>
+                                <lightning-formatted-date-time value={viewerSL.CreatedDate} hour="2-digit" minute="2-digit" second="2-digit" ></lightning-formatted-date-time>
                             </td>
                         </tr>
                     </template>
+                    <template for:each={notSameList} for:item="viewerNSL" for:index="j" >
+                        <tr key={viewerNSL.Id} data-name={viewerNSL.adelanywisl__objectType__c} class="tr"  >
+                            <td>
+                                <div data-object={viewerNSL.adelanywisl__objectType__c} data-value={viewerNSL.adelanywisl__record_id__c} onclick={details}  class="link" style="background-color: {viewer.adelanywisl__record_id__c }">
+                                    <lightning-icon icon-name="action:info" size="xx-small" ></lightning-icon>
+                                </div>
+                            </td>
+                            <td>
+                                {viewerNSL.adelanywisl__objectType__c}
+                            </td>
+                            <td >
+                                <a href={recordPageUrl} target=_blank><div onclick={navigate} data-value={viewerNSL.adelanywisl__record_id__c} data-object={viewerNSL.adelanywisl__objectType__c}  >{viewerNSL.adelanywisl__record_id__c}</div></a>
+                            </td>
+                            <td>
+                                {viewerNSL.adelanywisl__fullName__c}
+                            </td>
+                            <td>
+                                {viewerNSL.adelanywisl__Profile__c}
+                            </td>
+                            <td>
+                                <lightning-formatted-date-time value={viewerNSL.CreatedDate} hour="2-digit" minute="2-digit" second="2-digit" ></lightning-formatted-date-time>
+                            </td>
+                        </tr>
+                    </template>
+<!--                </tbody>-->
+<!--                <tbody>-->
+<!--                    <template for:each={viewersList} for:item="viewer" for:index="z" >-->
+<!--                        <tr key={viewer.z} data-name={viewer.adelanywisl__objectType__c} class="tr"  onloadeddata= {colorCheck}>-->
+<!--                            <td>-->
+<!--                                <div data-object={viewer.adelanywisl__objectType__c} data-value={viewer.adelanywisl__record_id__c} onclick={details}  class="link" style="background-color: {viewer.adelanywisl__record_id__c }">-->
+<!--                                    <lightning-icon icon-name="action:info" size="xx-small" ></lightning-icon>-->
+<!--                                </div>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                {viewer.adelanywisl__objectType__c}-->
+<!--                            </td>-->
+<!--                            <td >-->
+<!--                                <a href={recordPageUrl} target=_blank><div onclick={navigate} data-value={viewer.adelanywisl__record_id__c} data-object={viewer.adelanywisl__objectType__c}  >{viewer.adelanywisl__record_id__c}</div></a>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                {viewer.adelanywisl__fullName__c}-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                {viewer.adelanywisl__Profile__c}-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <lightning-formatted-date-time value={viewer.CreatedDate} hour="2-digit" minute="2-digit" second="2-digit" ></lightning-formatted-date-time>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                    </template>-->
                 </tbody>
             </table></div>
         </template>

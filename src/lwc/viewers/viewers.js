@@ -10,7 +10,10 @@ import { refreshApex } from '@salesforce/apex';
 import  createViewer from '@salesforce/apex/ViewersCtrl_Generic.createGenericViewer';
 import  deleteViewer from '@salesforce/apex/ViewersCtrl_Generic.deleteGenericViewer';
 import  getViewerSettings from '@salesforce/apex/ViewersCtrl_Generic.getViewerSettings';
+import  getSessionTime from '@salesforce/apex/ViewersCtrl_Generic.sessionMills';
 import  getList from '@salesforce/apex/ViewersCtrl_Generic.getList';
+import  getSessionMills from '@salesforce/apex/ViewersCtrl_Generic.getSessionTime';
+import  renewSession from '@salesforce/apex/ViewersCtrl_Generic.renewSession';
 import viewerUserIdFIELD from '@salesforce/schema/ViewerGeneric__c.Name';
 import viewerGenericIdFIELD from '@salesforce/schema/ViewerGeneric__c.Id';
 import recordIdFIELD from '@salesforce/schema/ViewerGeneric__c.record_id__c';
@@ -24,16 +27,12 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { CurrentPageReference } from 'lightning/navigation';
 import { NavigationMixin } from 'lightning/navigation';
 import LightningModal from 'lightning/modal';
+import { RefreshEvent } from "lightning/refresh";
 
 export default class Viewers extends NavigationMixin(LightningElement, LightningModal ) {
 
-		@wire(CurrentPageReference)
-		pageRef;
-
-		channelStart = '/event/StartViewing__e';
-		channelEnd = '/event/EndViewing__e';
-//		isSubscribeDisabled = false;
-//		isUnsubscribeDisabled = !this.isSubscribeDisabled;
+		channelStart = '/event/adelanywisl__StartViewing__e';
+		channelEnd = '/event/adelanywisl__EndViewing__e';
 		@track error;
 		@track userId = Id;
 		@track currentUserName;
@@ -45,7 +44,11 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 		@api objectApiName;
 		isVisible = false;
 		recId;
-		viewersList;
+		@api
+		viewersList = [];
+		checkedList = [];
+		sameList = [];
+		notSameList = [];
 		wiredViewersListResults;
 		origin = window.location.href;
 		iconNameOpen = "utility:down";
@@ -56,29 +59,53 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 		@track objTypeDetails;
 		isModalVisible = false;
 		modalHeader = "";
+		recordPageUrl;
 
-//		@wire(IsConsoleNavigation) isConsoleNavigation;
-
-		clicked(){alert("clicked");}
-
+		@wire(CurrentPageReference) pageRef;
 		@wire(getList)
 		wiredViewersList(result) {
 			  this.wiredViewersListResults = result;
 				if (result.data) {
-					  let data = JSON.parse(JSON.stringify(result.data));
-//					  for(let i = 0; i < data.length; i++){
-//								if(this.objects.includes(data[i].objectType__c)){
-//										console.log("contained !!! "+data[i].objectType__c);
-//								}
-//       			}
-						this.viewersList = JSON.parse(JSON.stringify(result.data));
-						console.log("List of Viewers  >> @wire  "+JSON.stringify(this.viewersList));
+						if(result.data.length > 0){
+								let listSame = [];
+								let listNotSame = [];
+								for(let i = 0 ; i < result.data.length; i++){
+										if(result.data[i].adelanywisl__record_id__c == this.recordId){
+												console.log('pushing for same record');
+												listSame.push(result.data[i]);
+										}else{
+												console.log('pushing for NOT same record');
+												listNotSame.push(result.data[i]);
+										}
+								};
+								this.sameList = listSame;
+								this.notSameList = listNotSame;
+								console.log('this.sameList =>  '+JSON.stringify(this.sameList));
+								console.log('this.notSameList =>  '+JSON.stringify(this.notSameList));
+						}else{
+								console.log('<<< wired list not filled up >>>');
+								this.sameList = [];
+								this.notSameList = [];
+
+						}
+						this.refreshCard();
+//						console.log('<<< checked list >>> '+JSON.stringify(this.checkedList));
+//					  let data = JSON.parse(JSON.stringify(result.data));
+//			  		console.log(result.data.length);
+//			  		console.log('the list contains  ' + JSON.stringify(result.data.length));
+//					  console.log('<<< wired list >>>');
+//			  		console.log('wired viewers' + JSON.stringify(result.data[0].Name)+' '+JSON.stringify(result.data[0].adelanywisl__fullName__c));
+//			  		console.log('user id ' + this.userId + ' ' + this.currentUserName);
+//						this.viewersList = JSON.parse(JSON.stringify(result.data));
+//						this.viewersList = JSON.parse(JSON.stringify(result.data));
 				} else if (result.error) {
 						this.error = JSON.stringify(error);
 				}
 		}
 
-		recordPageUrl;
+		colorCheck(){
+			  console.log('color check');
+   }
 
 		navigate(event){
 			  var id = event.target.dataset.value;
@@ -136,34 +163,18 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
     }
 
 		details(event){
-			  console.log("hovering ...1");
 			  this.debounce(this.details1(event), 200);
    	}
 
-
 		details1(event){
-			  console.log("hovering ...2");
-			  event.stopPropagation();
+//			  event.stopPropagation();
 				this.isModalVisible = true;
 			  this.recordIdFromEvent = event.currentTarget.dataset.value;
 			  this.objTypeDetails  = event.currentTarget.dataset.object;
 			  this.modalHeader  = this.objTypeDetails+" details";
-//			  console.log(JSON.stringify(event.currentTarget.dataset.object));
-//			  console.log(JSON.stringify(event.currentTarget.dataset.value));
-//			  console.log(event.toElement.dataset.object);
-//				console.log(this.objTypeDetails);
 			  getViewerSettings({recId: this.recordIdFromEvent}).then( (response) => {
 					  console.log(response)
 						this.detailsFields = response;
-//						response.forEach( (r) => {
-//							  const str = "name";
-//                const modStr = str[0].toUpperCase() + str.slice(1);
-//                console.log(str); // name
-//                console.log(modStr); // Name
-//						  	console.log('response '+r[0].toUpperCase() + r.slice(1));
-//						  	this.detailsFields.push(r[0].toUpperCase() + r.slice(1));
-//						})
-//					  console.log(this.detailsFields);
      		});
 		}
 
@@ -183,6 +194,11 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 				}
     }
 
+		refreshCard(){
+				this.isVisible = false;
+				setTimeout(()=>this.isVisible = true, 100);
+    }
+
 		filterRows(){
 			  let name = this.objectApiName;
 			  let elem = this.template.querySelectorAll("tr.tr");
@@ -200,11 +216,6 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 								}
 						}
 				);
-//				if(this.filterLabel == "Show All"){
-//					  this.filterLabel = "Show only "+this.objectApiName;
-//     		}else{
-//					  this.filterLabel = "Show All";
-//      	}
     }
 
     registerErrorListener() {
@@ -216,84 +227,58 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
     }
 
 		setViewers(dt){
+			  console.log('>>> setViewers');
 			  this.viewersList = JSON.parse(JSON.stringify(dt));
 		}
 
 
-//		onTabCreate(event){
-//				if (!this.isConsoleNavigation) {
-//						return;
-//				}
-//
-//				console.log(event.detail);
-//				const { highlighted } = event.detail;
-//				let tId = event.getParam("tabId");
-//				let workspaceAPI = component.find("workspace");
-//				let allTab = component.get("v.allTabInfo");
-//				workspaceAPI.getAllTabInfo().then((response) => {
-//								console.log(JSON.stringify(response));
-//
-//				});
-//				workspaceAPI.getTabInfo({
-//						tabId: tId
-//				})
-//				.then((result) => {
-//						console.log("tabInfo result ", JSON.stringify(result));
-//						allTab.push(result);
-//						let viewerRecord = component.get("c.createViewer");
-//						let recId = result.pageReference.attributes.recordId;
-//						viewerRecord.setParams({
-//								"cId": recId,
-//						});
-//						viewerRecord.setCallback(this, (response) => {
-//								if (response.getState() == "SUCCESS") {
-//										console.log("Viewer created "+JSON.stringify(response));
-//								} else {
-//										console.log("Viewer NOT created ");
-//								}
-//						});
-//						$A.enqueueAction(viewerRecord);
-//				});
-
-//   }
-
-//		onToggleHighlightTab(event) {
-//				if (!this.isConsoleNavigation) {
-//						return;
-//				}
-//				const { highlighted } = event.detail;
-//				getFocusedTabInfo().then((tabInfo) => {
-//						const { tabId } = tabInfo;
-//						setTabHighlighted(tabId, highlighted, {
-//								pulse: true,
-//								state: 'success',
-//						});
-//				})
-//		}
 
 		beforeUnloadHandler(event) {
 				event.preventDefault();
-			  console.log("UNLOAD:1" + document.location.href);
+			  console.log("BEFOREUNLOAD: " + document.location.href);
 			  let rId = this.recId;
 			  console.log(rId);
 			  deleteViewer({"cId": rId});
-				event.returnValue = "Any text";
-//				return "Any text";
 		}
 
-		// Initializes the component
+		unloadHandler(event) {
+				event.preventDefault();
+			  console.log("UNLOAD: " + document.location.href);
+			  let rId = this.recId;
+			  console.log(rId);
+			  deleteViewer({"cId": rId});
+		}
+
+		runNewSession(){
+			  renewSession();
+   	}
+
+		refreshSession(){
+			  getSessionMills().then( (t) => {
+					  console.log(t);
+						window.setInterval( this.runNewSession, t);
+				});
+    }
+
 		async connectedCallback() {
+			  this.refreshSession();
 			  this.filterLabel = "Filter by "+this.objectApiName.toUpperCase()+" on/off";
 			  this.recId = this.recordId;
 			  let viewerData = await createViewer({ recId: this.recordId });
-			  this.viewersList.push(viewerData);
+				console.log('viewerData:\n'+JSON.stringify(viewerData));
+			  if(viewerData){
+					  this.viewersList.push(viewerData);
+			  		console.log('this.viewersList:\n '+JSON.stringify(this.viewersList));
+     		}
 
 			  getList()
 				.then(result => {
 						this.viewersList=result;
+						console.log('>>> results >>>  '+JSON.stringify(this.viewersList));
 				})
 				.catch(error => {
 						this.error = error;
+						console.log('>>> '+JSON.stringify(this.error));
 				});
 
 				setInterval( () => {
@@ -306,30 +291,21 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
         		}
 				}, 5000);
 
-//				console.log(window.document.getElementsByClassName('slds-no-print oneAppNavContainer').length);
-//				let elm = window.document.getElementsByClassName('slds-no-print oneAppNavContainer');
-//				for(let i = 0; i < elm.length; i++){
-////					  console.log(" >> "+i+ " "+elm[i]);
-//            elm[i].addEventListener('click', this.handleTabChange());
-//        }
-//				.addEventListener('click', this.handleTabChange());
-//				elm.addEventListener('click', this.handleTabChange());
-
 			  window.addEventListener("beforeunload", this.beforeUnloadHandler.bind(this));
+//			  window.addEventListener("unload", this.unloadHandler.bind(this));
 				const messageCallback = (response) => {
 			  		refreshApex(this.wiredViewersListResults);
-						console.log('New message received: START user name >> ', JSON.stringify(response.data.payload.fullName__c));
+						console.log('New message received: START user name >> ', JSON.stringify(response.data.payload.adelanywisl__fullName__c));
 						const event = new ShowToastEvent({
-								title: 'User '+response.data.payload.fullName__c,
-								message: 'Start Viewing '+response.data.payload.type__c,
+								title: 'User '+response.data.payload.adelanywisl__fullName__c,
+								message: 'Start Viewing '+response.data.payload.adelanywisl__type__c,
 						});
-					if(this.userId != response.data.payload.userName__c){
+					if(this.userId != response.data.payload.adelanywisl__userName__c){
 							this.dispatchEvent(event);
       		}
 				};
 
 				subscribe(this.channelStart, -1, messageCallback).then((response) => {
-						// Response contains the subscription information on subscribe call
 						console.log(
 								'Subscription START response: ',
 								JSON.stringify(response)
@@ -339,12 +315,12 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 
 				const messageCallback2 = (response) => {
 			  		refreshApex(this.wiredViewersListResults);
-						console.log('New message received: END user name >> ', JSON.stringify(response.data.payload.userName__c));
+						console.log('New message received: END user name >> ', JSON.stringify(response.data.payload.adelanywisl__userName__c));
 						const event = new ShowToastEvent({
-								title: 'User '+response.data.payload.fullName__c,
-								message: 'End Viewing '+ response.data.payload.type__c,
+								title: 'User '+response.data.payload.adelanywisl__fullName__c,
+								message: 'End Viewing '+ response.data.payload.adelanywisl__type__c,
 						});
-						if(this.userId != response.data.payload.userName__c){
+						if(this.userId != response.data.payload.adelanywisl__userName__c){
 								this.dispatchEvent(event);
 						}
 						// Response contains the payload of the new message received
@@ -361,10 +337,5 @@ export default class Viewers extends NavigationMixin(LightningElement, Lightning
 				// Register error listener
 				this.registerErrorListener();
 		}
-
-//		disconnectedCallback() {
-//				alert('child disconnected callback');
-//			  deleteViewer({ recId: this.recordId });
-//		}
 
 }

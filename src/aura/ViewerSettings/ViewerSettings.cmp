@@ -2,13 +2,24 @@
  - Created by adpel on 09/05/2024.
  -->
 
-<aura:component description="ViewerSettings" controller="ViewersCtrl_Generic" implements="lightning:isUrlAddressable,force:appHostable,lightning:actionOverride,flexipage:availableForAllPageTypes">
+<aura:component description="ViewerSettings" controller="adelanywisl.ViewersCtrl_Generic" implements="lightning:isUrlAddressable,force:appHostable,lightning:actionOverride,flexipage:availableForAllPageTypes" access="global">
     <lightning:navigation aura:id="navService" />
     <aura:attribute name="SObjects" type="List" default="[]" />
     <aura:attribute name="Fields" type="List" default="[]" />
     <aura:attribute name="selectedFields" type="String" default="" />
     <aura:attribute name="selectedObject" type="String" default="" description="Selected Object Value"/>
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+<!--    <lightning:listView-->
+<!--        objectApiName="adelanywisl.ViewerGeneric__c"-->
+<!--        listName="All"-->
+<!--        rows="5"-->
+<!--        showSearchBar="true"-->
+<!--        showActionBar="false"-->
+<!--        enableInlineEdit="true"-->
+<!--        showRowLevelActions="false"-->
+<!--    />-->
+
     <div class="slds-x-small-size_12-of-12 slds-list_horizontal">
         <div class="slds-x-small-size_4-of-12"></div>
         <div class="slds-x-small-size_3-of-12">
@@ -18,7 +29,7 @@
                         <lightning:select aura:id="objectsPicklist" value="{!v.selectedObject}" onchange="{!c.handleObjectSelection}" name="objectPicklist" label="Select Object" required="true">
                             <option value="">--None--</option>
                             <aura:iteration items="{!v.SObjects}" var="obj" indexVar="key">
-                                <option text="{!obj}" value="{!obj}"></option>
+                                <option  value="{!obj}">{!obj}</option>
                             </aura:iteration>
                         </lightning:select>
                     </div>
@@ -32,14 +43,14 @@
         <div class="slds-x-small-size_4-of-6">
             <div class="slds-card-wrapper">
                 <label class="slds-form-element__label">
-                    {!v.selectedObject} Fields to Display
+                    Fields to display <strong>{!v.selectedObject}</strong>
                 </label>
                 <div class="slds-cell-wrap">
                     <lightning:checkboxGroup
                             options="{! v.Fields }"
                             value="{! v.selectedFields }"
                             onchange="{! c.handleFieldSelection }"
-                            style="columns: 3; background-color: WhiteSmoke; padding: 3px 20px 3px 20px;"/>
+                            style="columns: 3; background-color: WhiteSmoke; padding: 3px 20px 3px 20px;" />
                 </div>
             </div>
             <lightning:button onclick="{!c.saveSettings}" iconName="utility:save" variant="brand" label="Save" class="slds-float_right slds-m-top_x-large"/>

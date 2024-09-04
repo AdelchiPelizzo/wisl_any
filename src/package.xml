@@ -3,12 +3,17 @@
     <types>
         <members>ViewersCtrl</members>
         <members>ViewersCtrl_Generic</members>
+        <members>PurgeViewers</members>
+        <members>ViewersCtrlTest</members>
+        <members>PurgeViewersTest</members>
+        <members>ViewersManagement</members>
+        <members>Utility</members>
+        <members>UtilityTest</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>ViewersHandler</members>
         <members>ViewerGenericHandler</members>
-        <members>Viewers</members>
         <name>ApexTrigger</name>
     </types>
     <types>
@@ -20,6 +25,10 @@
         <members>record_viewers</members>
         <members>ViewerSettings</members>
         <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>Remove_Residual_Viewers</members>
+        <name>ApexPage</name>
     </types>
     <version>60.0</version>
 </Package>

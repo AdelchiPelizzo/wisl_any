@@ -11,7 +11,7 @@
             if (state === "SUCCESS") {
 							  component.set("v.SObjects", response.getReturnValue());
        			}else if (state === "INCOMPLETE") {
-                             // do something
+                             // do somethings
 					  }
 					 	else if (state === "ERROR") {
 							 	var errors = response.getError();
@@ -26,26 +26,6 @@
 				});
 				$A.enqueueAction(getObjects);
    },
-
- 		getFieldName: function( component){
-				var getFields = component.get("c.getFieldsName");
-				getFields.setParam( {objectAPIName: "Account" });
-				getFields.setCallback(this, function(response) {
-						var state = response.getState();
-						if (state === "SUCCESS"){
-								var result = response.getReturnValue();
-								var plValues = [];
-								for (var i = 0; i < result.length; i++) {
-										plValues.push({
-												label: result[i],
-												value: result[i]
-										});
-								}
-								component.set("v.GenreList", plValues);
-						}
-				});
-				$A.enqueueAction(action);
-    },
 
  		handleObjectSelection: function(component, event){
 				var selectedValue = event.target.value;
